@@ -1,1 +1,2 @@
-export * from './AppError'
+export * from './AppError';
+export * from './GlobalErrorHandler';

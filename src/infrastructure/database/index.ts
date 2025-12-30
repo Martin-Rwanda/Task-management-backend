@@ -1,2 +1,2 @@
 export * from './models';
-export * from './sequelize';
+export * from './sequelizer'

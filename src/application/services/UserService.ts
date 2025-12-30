@@ -1,6 +1,7 @@
 import { IUserRepository } from "../../domain";
 import { User } from "../../domain";
 import { AppError } from "../../shared";
+import { hashPassword } from "../../shared/utils/password";
 
 export class UserService {
     constructor(private userRepo: IUserRepository) {}
@@ -9,8 +10,13 @@ export class UserService {
         const existing = await this.userRepo.findByEmail(email);
         if (existing) throw new AppError("User already exists", 400);
 
-        const user = new User("", name, email, password, isActive, new Date(), new Date());
-        return this.userRepo.create(user);
+        const hashed = await hashPassword(password)
+        return this.userRepo.create({
+            name,
+            email,
+            password: hashed,
+            isActive,
+        } as any);
     }
 
     async findByEmail(email: string): Promise<User> {

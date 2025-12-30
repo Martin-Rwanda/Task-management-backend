@@ -4,3 +4,42 @@
  - npm i -D typescript@4.8.4 ts-node @types/node @types/express @types/bcrypt @types/jsonwebtoken nodemon
 # Optional for logging
  - npm i winston
+
+# Login test-tab
+   - const json = pm.response.json();
+    pm.environment.set("accessToken", json.accessToken);
+    pm.environment.set("refreshToken", json.refreshToken);
+
+# Refresh test-tab
+    - pm.environment.set("accessToken", json.accessToken);
+        if (json.refreshToken) {
+            pm.environment.set("refreshToken", json.refreshToken);
+        }
+
+## db 
+  - "migrate": "sequelize db:migrate",  // creates/updates tables in your database according to the migration files
+  - "migrate:undo": "sequelize db:migrate:undo", //useful if you made a mistake and want to roll back the last change.
+  - "migrate:undo:all": "sequelize db:migrate:undo:all" //wipes the database schema created by Sequelize migrations. Useful in development/testing.
+
+  ## migr
+    npx sequelize-cli migration:generate --name create-users
+    npx sequelize-cli migration:generate --name create-roles
+    npx sequelize-cli migration:generate --name create-permissions
+    npx sequelize-cli migration:generate --name create-user-roles
+    npx sequelize-cli migration:generate --name create-role-permissions
+    npx sequelize-cli migration:generate --name create-refresh-tokens
+    npx sequelize-cli db:migrate
+
+
+    npx sequelize-cli db:drop      # drops the database
+    npx sequelize-cli db:create    # creates the database again
+    npx sequelize-cli db:migrate   # runs all migrations from scratch
+
+USER_CREATE, USER_READ, USER_UPDATE, USER_DELETE
+
+ROLE_CREATE, ROLE_READ, ROLE_UPDATE, ROLE_DELETE
+
+TASK_CREATE, TASK_READ, TASK_UPDATE, TASK_DELETE
+
+
+    npx ts-node src/test-db.ts

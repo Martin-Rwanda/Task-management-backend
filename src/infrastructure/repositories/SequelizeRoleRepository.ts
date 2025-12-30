@@ -24,7 +24,7 @@ export class SequelizeRoleRepository implements IRoleRepository {
 
     async assignPermission(roleId: string, permissionId: string): Promise<void> {
         const existing = await RolePermissionModel.findOne({
-            where: { roleId, permissionsId: permissionId }
+            where: { roleId, permissionId }
         });
 
         if (existing) {
@@ -35,7 +35,7 @@ export class SequelizeRoleRepository implements IRoleRepository {
 
     async removePermission(roleId: string, permissionId: string): Promise<void> {
         await RolePermissionModel.destroy({
-            where: { roleId, permissionsId: permissionId }
+            where: { roleId, permissionId }
         });
     }
 
