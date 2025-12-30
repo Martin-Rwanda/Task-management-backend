@@ -72,7 +72,7 @@ async function bootstrap() {
       });
     }
 
-    console.log("✅ Roles and permissions setup completed");
+    console.log("✅ Roles and permissions setup completed..");
 
     // ----- Create admin user -----
     const adminEmail = "ntezijmartin25@example.com";
