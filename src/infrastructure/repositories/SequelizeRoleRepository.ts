@@ -1,6 +1,6 @@
 import { IRoleRepository } from "../../domain";
 import { Role } from "../../domain";
-import { RoleModel } from "../database";
+import { RoleModel, UserRoleModel } from "../database";
 import { RolePermissionModel } from "../database";
 
 export class SequelizeRoleRepository implements IRoleRepository {

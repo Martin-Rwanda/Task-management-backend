@@ -3,9 +3,15 @@ import { comparePassword } from "../../shared/utils/password";
 import { generateAccessToken, generateRefreshToken } from "../../shared/utils/jwt";
 import { RefreshTokenModel } from "../../infrastructure/database/models/RefreshTokenModel";
 import { AppError } from "../../shared";
+import { RoleModel, UserModel } from "../../infrastructure";
 
+interface UserWithRoles extends UserModel {
+    roles?: RoleModel[];
+}
 export class AuthService {
-    constructor(private authRepo: IUserRepository) {}
+    constructor(
+        private authRepo: IUserRepository,
+    ) {}
 
     async login(email: string, password: string) {
         const user = await this.authRepo.findByEmail(email);
@@ -14,7 +20,13 @@ export class AuthService {
         const valid = await comparePassword(password, user.password);
         if(!valid) throw new AppError("Invalid credentials", 401);
 
-        const payload = {sub: user.id, role: user.role};
+        const userInstance = await UserModel.findByPk(user.id, {
+            include: [{ model: RoleModel, as: "roles" }] // fetch roles
+        })as UserWithRoles;
+
+        const roles = userInstance?.roles?.map(role => role.name) || []; 
+
+        const payload = {sub: user.id, roles};
 
         const accessToken = generateAccessToken(payload);
         const refreshToken = generateRefreshToken(payload);
@@ -24,7 +36,7 @@ export class AuthService {
             token: refreshToken
         });
 
-        return { accessToken, refreshToken};
+        return { accessToken, refreshToken, user};
 
     }
 }

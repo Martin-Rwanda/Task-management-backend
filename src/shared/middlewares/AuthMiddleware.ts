@@ -17,12 +17,7 @@ export const AuthMiddleware = (
 
     try {
         const payload = verifyAccessToken(token) as AccessTokenPayload;
-
-        req.user = {
-            id: payload.sub,
-            role: payload.role,
-        };
-
+        req.user = payload;
         next();
     } catch {
         throw new AppError("Invalid or expired token", 401);

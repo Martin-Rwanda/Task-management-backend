@@ -14,10 +14,11 @@ export const RbacMiddleware = (requiredPermission: string) =>
             throw new AppError("Unauthorized", 401);
         }
 
-        const user = await UserModel.findByPk(req.user.id, {
+        const user = await UserModel.findByPk(req.user.sub, {
             include: {
-                model: RoleModel, as: "roles",
-                include: [{ model: PermissionModel, as: "permissions" }]
+                model: RoleModel,
+                as: "roles",
+                include: [{ model: PermissionModel, as: "permissions" }],
             },
         }) as UserWithRoles;
 

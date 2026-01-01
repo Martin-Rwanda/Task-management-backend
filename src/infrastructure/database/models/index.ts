@@ -4,3 +4,4 @@ export * from './RolePermissionModel';
 export * from './UserModel';
 export * from './UserRoleModel';
 export * from './RefreshTokenModel';
+export * from './AuditLogModel'

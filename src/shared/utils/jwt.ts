@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { AccessTokenPayload } from "../../application/dtos/AccessTokenPayload";
 import { jwtConfig } from "../../config/jwt.config";
-import { RefreshTokenPayload } from "../../application/dtos/ref";
+import { RefreshTokenPayload } from "../../application/dtos/RefreshTokenPayload";
 
 export const generateAccessToken = (
     payload: AccessTokenPayload
