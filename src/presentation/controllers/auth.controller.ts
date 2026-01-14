@@ -13,4 +13,29 @@ export class AuthController {
             next(err);
         }
     };
+
+    logout = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { refreshToken } = req.body;
+
+            if (!refreshToken || typeof refreshToken !== "string") {
+                return res.status(400).json({ message: "Refresh token required" });
+            }
+
+            const result = await this.authService.logout(refreshToken);
+            return res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    refresh = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { refreshToken } = req.body;
+            const token = await this.authService.refresh(refreshToken);
+            res.json(token);
+        } catch (err) {
+            next(err);
+        }
+    };
 }

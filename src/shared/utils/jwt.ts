@@ -16,17 +16,26 @@ export const generateAccessToken = (
     );
 };
 
+// export const generateRefreshToken = (
+//     payload: AccessTokenPayload
+// ): string => {
+//     return jwt.sign(
+//         { ...payload, tokenType: "refresh" },
+//         jwtConfig.refreshSecret,
+//         {
+//             expiresIn: "7d",
+//             algorithm: "HS256",
+//         }
+//     );
+// };
+
 export const generateRefreshToken = (
-    payload: AccessTokenPayload
+  payload: RefreshTokenPayload
 ): string => {
-    return jwt.sign(
-        { ...payload, tokenType: "refresh" },
-        jwtConfig.refreshSecret,
-        {
-            expiresIn: "7d",
-            algorithm: "HS256",
-        }
-    );
+  return jwt.sign(payload, jwtConfig.refreshSecret, {
+    expiresIn: "7d",
+    algorithm: "HS256",
+  });
 };
 
 export const verifyAccessToken = (token: string): JwtPayload => {

@@ -7,7 +7,9 @@ async function startServer() {
     try {
         await sequelize.authenticate();
         console.log("Database connected successfully.");
-        await sequelize.sync({ alter: true });
+        if (process.env.NODE_ENV !== "production") {
+            await sequelize.sync({ alter: true });
+        }
         console.log("Models synced.");
 
         app.listen(PORT, () => {

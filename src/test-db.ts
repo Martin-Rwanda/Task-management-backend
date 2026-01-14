@@ -1,14 +1,16 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import {
+import { 
   sequelize,
   UserModel,
   RoleModel,
   PermissionModel,
   UserRoleModel,
-  RolePermissionModel,
-} from "./models";
+  RolePermissionModel, 
+} from "./infrastructure";
+
+
 import bcrypt from "bcryptjs";
 
 async function bootstrap() {
@@ -75,7 +77,7 @@ async function bootstrap() {
     console.log("✅ Roles and permissions setup completed..");
 
     // ----- Create admin user -----
-    const adminEmail = "ntezijmartin25@example.com";
+    const adminEmail = "ntezijmartin25@gmail.com";
 
     await UserModel.destroy({ where: { email: adminEmail }, force: true });
 

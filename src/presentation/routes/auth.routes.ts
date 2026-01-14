@@ -6,5 +6,7 @@ const authRoutes = Router();
 const controller = new AuthController(authService);
 
 authRoutes.post("/login", controller.login);
+authRoutes.post("/logout", controller.logout);
+authRoutes.post("/refresh", controller.refresh);
 
 export {authRoutes};
