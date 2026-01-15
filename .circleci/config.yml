@@ -1,0 +1,23 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: cimg/node:20.6
+    working_directory: ~/Task-management-backend
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: npm ci
+      - run:
+          name: Run Tests & Generate Coverage
+          command: npm run coverage
+      - run:
+          name: Report Coverage to Coveralls
+          command: npm run coverage
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - build

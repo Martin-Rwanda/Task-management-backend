@@ -1,5 +1,5 @@
 import { ITaskRepository } from "../../domain/repositories/TaskRepository";
-import { Task } from "../../domain/entities/Task";
+import { safePriority, Task } from "../../domain/entities/Task";
 import { TaskModel, TaskAssignmentModel } from "../database/models";
 
 export class SequelizeTaskRepository implements ITaskRepository {
@@ -11,40 +11,53 @@ export class SequelizeTaskRepository implements ITaskRepository {
       dueDate: task.dueDate,
       boardId: task.boardId,
     });
+
     return Task.fromPersistence({
-      id : created.id,
-      title :created.title,
-      description :created.description,
-      priority :created.priority,
-      dueDate :created.dueDate,
-      boardId :created.boardId,
-      createdAt :created.createdAt,
-      updatedAt :created.updatedAt,
-      deletedAt :created.deletedAt
+      id: created.id,
+      title: created.title,
+      description: created.description ?? "",
+      priority: safePriority(created.priority) ?? null,
+      dueDate: created.dueDate ?? new Date(),
+      boardId: created.boardId,
+      createdAt: created.createdAt,
+      updatedAt: created.updatedAt,
+      deletedAt: created.deletedAt
     });
   }
 
   async findById(id: string): Promise<Task | null> {
     const task = await TaskModel.findByPk(id);
     if (!task) return null;
-    return new Task(
-      task.id,
-      task.title,
-      task.description,
-      task.priority as any,
-      task.dueDate,
-      task.boardId,
-      task.createdAt,
-      task.updatedAt,
-      task.deletedAt
-    );
+
+    return Task.fromPersistence({
+      id: task.id,
+      title: task.title,
+      description: task.description ?? "",
+      priority: safePriority(task.priority) ?? null,
+      dueDate: task.dueDate ?? new Date(),
+      boardId: task.boardId,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+      deletedAt: task.deletedAt
+    });
   }
 
   async listAll(boardId?: string): Promise<Task[]> {
     const where = boardId ? { boardId } : undefined;
     const tasks = await TaskModel.findAll({ where });
-    return tasks.map(
-      t => new Task(t.id, t.title, t.description, t.priority as any, t.dueDate, t.boardId, t.createdAt, t.updatedAt, t.deletedAt)
+
+    return tasks.map(t =>
+      Task.fromPersistence({
+        id: t.id,
+        title: t.title,
+        description: t.description ?? "",
+        priority: safePriority(t.priority) ?? null,
+        dueDate: t.dueDate ?? new Date(),
+        boardId: t.boardId,
+        createdAt: t.createdAt,
+        updatedAt: t.updatedAt,
+        deletedAt: t.deletedAt
+      })
     );
   }
 

@@ -34,28 +34,32 @@ export class Task {
     this.deletedAt = props.deletedAt;
   }
 
-  static create(params :{
-    title: string,
-    boardId: string,
-    description: string,
-    priority?: "low" | "medium" | "high",
-    dueDate: Date
-  }): Task {
-    const now = new Date();
-    return new Task({
-      id :"", 
-      title : params.title, 
-      description : params.description, 
-      priority : params.priority | null, 
-      dueDate : params.dueDate, 
-      boardId : params.boardId, 
-      createdAt : now, 
-      updatedAt :now
-    });
-  }
+  static create(params: {
+  title: string;
+  boardId: string;
+  description?: string;
+  priority?: "low" | "medium" | "high" | null;
+  dueDate?: Date;
+}): Task {
+  const now = new Date();
+  return new Task({
+    id: "", // generate later if needed
+    title: params.title,
+    description: params.description ?? "", // default to empty string
+    priority: params.priority ?? null,      // default to null
+    dueDate: params.dueDate ?? now,        // default to now
+    boardId: params.boardId,
+    createdAt: now,
+    updatedAt: now
+  });
+}
 
   static fromPersistence(props: TaskProps): Task {
     return new Task(props);
   }
 }
 
+export function safePriority(priority?: string | null): "low" | "medium" | "high" | null {
+  if (priority === "low" || priority === "medium" || priority === "high") return priority;
+  return null;
+}

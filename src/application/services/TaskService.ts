@@ -1,30 +1,46 @@
 import { ITaskRepository } from "../../domain/repositories/TaskRepository";
-import { Task } from "../../domain/entities/Task";
+import { Task, safePriority } from "../../domain/entities/Task";
+
+interface CreateTaskParams {
+  title: string;
+  boardId: string;
+  description?: string;
+  priority?: "low" | "medium" | "high";
+  dueDate?: Date;
+}
 
 export class TaskService {
   constructor(private repo: ITaskRepository) {}
 
-  create(title: string, boardId: string, description?: string, priority?: "low"|"medium"|"high", dueDate?: Date) {
-    return this.repo.create(Task.create(title, boardId, description, priority, dueDate));
+  async create(params: CreateTaskParams): Promise<Task> {
+    const task = Task.create({
+      title: params.title,
+      boardId: params.boardId,
+      description: params.description ?? "",
+      priority: params.priority ?? null,
+      dueDate: params.dueDate ?? new Date()
+    });
+
+    return this.repo.create(task);
   }
 
-  findById(id: string) {
+  async findById(id: string): Promise<Task | null> {
     return this.repo.findById(id);
   }
 
-  listAll(boardId?: string) {
+  async listAll(boardId?: string): Promise<Task[]> {
     return this.repo.listAll(boardId);
   }
 
-  assignUser(taskId: string, userId: string) {
+  async assignUser(taskId: string, userId: string): Promise<void> {
     return this.repo.assignUser(taskId, userId);
   }
 
-  removeUser(taskId: string, userId: string) {
+  async removeUser(taskId: string, userId: string): Promise<void> {
     return this.repo.removeUser(taskId, userId);
   }
 
-  listUsers(taskId: string) {
+  async listUsers(taskId: string): Promise<string[]> {
     return this.repo.listUsers(taskId);
   }
 }

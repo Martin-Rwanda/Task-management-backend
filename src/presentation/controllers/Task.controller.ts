@@ -7,7 +7,15 @@ export class TaskController {
   createTask = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { title, boardId, description, priority, dueDate } = req.body;
-      const task = await this.service.create(title, boardId, description, priority, dueDate ? new Date(dueDate) : undefined);
+
+      const task = await this.service.create({
+        title,
+        boardId,
+        description,
+        priority,
+        dueDate: dueDate ? new Date(dueDate) : undefined
+      });
+
       res.status(201).json(task);
     } catch (err) {
       next(err);

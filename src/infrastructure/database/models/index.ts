@@ -19,6 +19,8 @@ UserRoleModel.initialize(sequelize);
 RolePermissionModel.initialize(sequelize);
 RefreshTokenModel.initialize(sequelize);
 ProjectModel.initialize(sequelize);
+ProjectUserModel.initialize(sequelize);
+TaskAssignmentModel.initialize(sequelize);
 BoardModel.initialize(sequelize);
 TaskModel.initialize(sequelize);
 

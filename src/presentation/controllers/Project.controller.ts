@@ -7,7 +7,7 @@ export class ProjectController {
   createProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, ownerId, description } = req.body;
-      const project = await this.service.create(name, ownerId, description);
+      const project = await this.service.create({name, ownerId, description});
       res.status(201).json(project);
     } catch (err) {
       next(err);

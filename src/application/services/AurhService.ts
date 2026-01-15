@@ -72,67 +72,54 @@ export class AuthService {
         return { message: "Logged out successfully" };
     }
     
-    // async refresh(refreshToken: string) {
-    //     const storedToken = await RefreshTokenModel.findOne({
-    //         where: { token: refreshToken }
-    //     });
-
-    //     if (!storedToken) {
-    //         throw new AppError("Invalid refresh token", 401);
-    //     }
-
-    //     const payload = verifyRefreshToken(refreshToken);
-
-    //     const newAccessToken = generateAccessToken({
-    //         sub: payload.userId,
-    //         roles: payload.roles,
-    //     });
-
-    //     return { accessToken: newAccessToken };
-    // }
-
-    async refresh(refreshToken: string) {
-        const storedToken = await RefreshTokenModel.findOne({
+    async refreshToken(refreshToken: string) {
+        // Step 1: Fetch the stored token safely
+        const stored = await RefreshTokenModel.findOne({
             where: {
             token: refreshToken,
-            deletedAt: { [Op.is]: null },
+            deletedAt: null,
+            expiresAt: { [Op.gt]: new Date() },
             },
         });
 
-        if (!storedToken || storedToken.expiresAt < new Date()) {
-            throw new AppError('Invalid or expired refresh token', 401);
+        if (!stored) {
+            throw new AppError("Invalid or expired refresh token", 401);
         }
 
-        const payload = verifyRefreshToken(refreshToken);
+        // Step 2: Verify JWT safely
+        let payload: RefreshTokenPayload;
+        try {
+            payload = verifyRefreshToken(refreshToken);
+            if (payload.tokenType !== "refresh") throw new AppError("Invalid token type", 401);
+        } catch (err) {
+            // Soft-delete the token safely if verification fails
+            await stored.update({ deletedAt: new Date() }).catch(() => null);
+            throw new AppError("Invalid or expired refresh token", 401);
+        }
 
-        // 🔒 revoke old token (atomic)
-        await RefreshTokenModel.destroy({
-            where: {
-            id: storedToken.id,
-            deletedAt: { [Op.is]: null },
-            },
-        });
+        // Step 3: Soft-delete the old token
+        await stored.update({ deletedAt: new Date() }).catch(() => null);
 
-        const newAccessToken = generateAccessToken({
-            sub: payload.userId,
-            roles: payload.roles,
-        });
+        // Step 4: Fetch the user
+        const user = await UserModel.findByPk(payload.userId, {
+            include: [{ model: RoleModel, as: "roles" }],
+        }) as UserWithRoles | null;
 
-        const newRefreshToken = generateRefreshToken({
-            userId: payload.userId,
-            roles: payload.roles,
-            tokenType: "refresh",
-        });
+        if (!user || !user.isActive) throw new AppError("User not found or inactive", 404);
 
+        // Step 5: Generate new tokens
+        const roles = (user.roles || []).map((r) => r.name);
+
+        const newAccessToken = generateAccessToken({ sub: user.id, roles });
+        const newRefreshToken = generateRefreshToken({ userId: user.id, roles, tokenType: "refresh" });
+
+        // Step 6: Save the new refresh token safely
         await RefreshTokenModel.create({
-            userId: payload.userId,
+            userId: user.id,
             token: newRefreshToken,
-            expiresAt: new Date(Date.now() + jwtConfig.refreshTokenTtl),
-        });
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        }).catch((err) => console.error("Refresh token save error:", err));
 
-        return {
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
-        };
+        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     }
 }

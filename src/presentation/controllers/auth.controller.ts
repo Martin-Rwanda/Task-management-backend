@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../../application/services/AurhService";
+import { AppError } from "../../shared";
 
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+    ) {}
 
     login = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -29,13 +32,17 @@ export class AuthController {
         }
     };
 
-    refresh = async (req: Request, res: Response, next: NextFunction) => {
+    refreshToken = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { refreshToken } = req.body;
-            const token = await this.authService.refresh(refreshToken);
-            res.json(token);
+            const newToken = await this.authService.refreshToken(refreshToken);
+            res.status(200).json(newToken);
         } catch (err) {
-            next(err);
+            if (err instanceof AppError) {
+            res.status(err.statusCode).json({ message: err.message });
+            } else {
+            next(err); // fallback
+            }
         }
     };
 }
