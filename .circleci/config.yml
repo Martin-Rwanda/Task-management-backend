@@ -1,22 +1,42 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@5.0.0
-
 jobs:
   test:
     docker:
       - image: cimg/node:20.6
-    working_directory: ~/Task-management-backend
+      - image: circleci/postgres:15.4
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: task_management_test
+          POSTGRES_PASSWORD: ""
+    working_directory: ~/repo
     steps:
       - checkout
-      - node/install-packages
       - run:
-          name: Run Tests 
-          command: npm run test
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Wait for Postgres
+          command: |
+            echo "Waiting for Postgres to be ready..."
+            for i in {1..10}; do
+              pg_isready -h 127.0.0.1 -p 5432 && break
+              sleep 1
+            done
+      - run:
+          name: Run migrations
+          command: npx sequelize db:migrate --env test
+      - run:
+          name: Run tests
+          command: npm test
+      - run:
+          name: Upload coverage to Coveralls
+          command: npm run coverage
+          environment:
+            COVERALLS_REPO_TOKEN: $COVERALLS_REPO_TOKEN
 
 workflows:
   version: 2
-  test:
+  test-and-cover:
     jobs:
       - test
