@@ -1,23 +1,24 @@
 version: 2.1
+
+orbs:
+  node: circleci/node@5.0.0
+
 jobs:
-  build:
+  test:
     docker:
       - image: cimg/node:20.6
-    working_directory: ~/repo
+    working_directory: ~/Task-management-backend
     steps:
       - checkout
+      - node/install-packages
       - run:
-          name: Install Dependencies
-          command: npm ci
-      - run:
-          name: Run Tests & Generate Coverage
-          command: npm run coverage
-      - run:
-          name: Report Coverage to Coveralls
-          command: npm run coverage
+          name: Run Tests & Upload Coverage
+          command: |
+            npm run test
+            nyc report --reporter=lcov | coveralls
 
 workflows:
   version: 2
   test:
     jobs:
-      - build
+      - test

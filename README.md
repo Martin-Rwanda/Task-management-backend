@@ -1,8 +1,9 @@
 # Task Management Backend
 
-[![CircleCI](https://circleci.com/gh/Martin-Rwanda/Task-management-backend.svg?style=shield)](https://circleci.com/gh/Martin-Rwanda/Task-management-backend)
-
 [![Coverage Status](https://coveralls.io/repos/github/Martin-Rwanda/Task-management-backend/badge.svg?branch=master)](https://coveralls.io/github/Martin-Rwanda/Task-management-backend?branch=master)
+
+
+[![CircleCI](https://circleci.com/gh/Martin-Rwanda/Task-management-backend.svg?style=shield)](https://circleci.com/gh/Martin-Rwanda/Task-management-backend)
 
 ## Description
 Backend API for Task Management application built with Node.js, Express, Sequelize, and PostgreSQL.
