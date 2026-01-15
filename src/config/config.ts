@@ -28,14 +28,14 @@ const config: SequelizeConfig = {
   test: {
     username: process.env.TEST_DB_USER as string,
     password: process.env.TEST_DB_PASS as string,
-    database: process.env.TEST_DB_NAME_TEST as string,
+    database: process.env.TEST_DB_NAME as string,
     host: process.env.DB_HOST as string,
     dialect: 'postgres',
   },
   production: {
     username: process.env.PROD_DB_USER as string,
     password: process.env.PROD_DB_PASS as string,
-    database: process.env.PROD_DB_NAME_PROD as string,
+    database: process.env.PROD_DB_NAME as string,
     host: process.env.DB_HOST as string,
     dialect: 'postgres',
   },

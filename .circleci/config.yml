@@ -6,10 +6,10 @@ jobs:
       - image: cimg/node:20.6
       - image: circleci/postgres:15.4
         environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: task_management_test
-          POSTGRES_PASSWORD: ""
-    working_directory: ~/repo
+          POSTGRES_USER: $TEST_DB_USER
+          POSTGRES_DB: $TEST_DB_NAME
+          POSTGRES_PASSWORD: $TEST_DB_PASS
+    working_directory: ~/Task-management-backend
     steps:
       - checkout
       - run:
@@ -19,10 +19,13 @@ jobs:
           name: Wait for Postgres
           command: |
             echo "Waiting for Postgres to be ready..."
-            for i in {1..10}; do
-              pg_isready -h 127.0.0.1 -p 5432 && break
+            for i in {1..20}; do
+              pg_isready -h localhost -p 5432 && break
               sleep 1
             done
+      - run:
+          name: Create test database
+          command: psql -h localhost -U $TEST_DB_USER -c "CREATE DATABASE $TEST_DB_NAME;" || true
       - run:
           name: Run migrations
           command: npx sequelize db:migrate --env test
