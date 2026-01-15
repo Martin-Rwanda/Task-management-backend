@@ -12,10 +12,8 @@ jobs:
       - checkout
       - node/install-packages
       - run:
-          name: Run Tests & Upload Coverage
-          command: |
-            npm run test
-            nyc report --reporter=lcov | coveralls
+          name: Run Tests 
+          command: npm run test
 
 workflows:
   version: 2
