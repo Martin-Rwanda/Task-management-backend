@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "coverage": "nyc npm test --reporter=lcov | coveralls",
     "dev": "nodemon src/server.ts",
     "migrate": "sequelize db:migrate",
     "migrate:undo": "sequelize db:migrate:undo",
